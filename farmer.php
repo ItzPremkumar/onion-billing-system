@@ -1,0 +1,137 @@
+<?php
+session_start();
+include "db.php";
+
+if(!isset($_SESSION['admin'])){
+    header("Location: login.php");
+    exit;
+}
+
+/* Insert Farmer */
+if(isset($_POST['save'])){
+    $name = $_POST['name'];
+    $address = $_POST['address'];
+    $mobile = $_POST['mobile'];
+
+    $query = "INSERT INTO farmer(name, address, mobile_no)
+              VALUES('$name','$address','$mobile')";
+    pg_query($conn, $query);
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Farmer Management</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg,#2e7d32,#66bb6a);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.container-box {
+    background: white;
+    padding: 30px;
+    margin-top: 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.title {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.btn-save {
+    background: #2e7d32;
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background: #1b5e20;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="container-box">
+
+<h2 class="title text-center mb-4">👨‍🌾 Farmer Management</h2>
+
+<!-- Farmer Form -->
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label>Farmer Name</label>
+<input type="text" name="name" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Mobile Number</label>
+<input type="text" name="mobile" class="form-control" required>
+</div>
+
+<div class="col-md-12 mb-3">
+<label>Address</label>
+<textarea name="address" class="form-control" rows="2" required></textarea>
+</div>
+
+</div>
+
+<button type="submit" name="save" class="btn btn-save w-100">
+Save Farmer
+</button>
+
+</form>
+
+<hr class="my-4">
+
+<!-- Farmer Table -->
+<h4 class="mb-3">Farmer List</h4>
+
+<table class="table table-bordered table-striped">
+<thead class="table-success">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Address</th>
+<th>Mobile</th>
+</tr>
+</thead>
+
+<tbody>
+
+<?php
+$result = pg_query($conn, "SELECT * FROM farmer ORDER BY farmer_id DESC");
+while($row = pg_fetch_assoc($result)){
+?>
+<tr>
+<td><?php echo $row['farmer_id']; ?></td>
+<td><?php echo $row['name']; ?></td>
+<td><?php echo $row['address']; ?></td>
+<td><?php echo $row['mobile_no']; ?></td>
+</tr>
+<?php } ?>
+
+</tbody>
+</table>
+
+<div class="text-center mt-3">
+<a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+</div>
+</div>
+
+</body>
+</html>
